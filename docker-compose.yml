@@ -1,0 +1,9 @@
+version: '2'
+services:
+    build-and-test:
+        image: gcc:7.2.0
+        network_mode: bridge
+        volumes:
+            - .:/code
+        command: "bash -c 'cd /code; make; ./colReplacer'"
+        tty: true
