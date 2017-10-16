@@ -1,7 +1,11 @@
-#include <iostream>
+#include "CsvArgHandler.hpp"
+#include "CsvProcessor.hpp"
 
-int main()
+int main(int argc, char *argv[])
 {
-    std::cout << "Hello abc!" << std::endl;
+    const bool IN_AND_OUT_ARE_FILES = true;
+    CsvArgs args(argc, argv, IN_AND_OUT_ARE_FILES);
+    CsvProcessor processor(args);
+    processor.replaceColValues();
     return 0;
 }

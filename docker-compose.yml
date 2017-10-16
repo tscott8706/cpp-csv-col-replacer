@@ -5,7 +5,7 @@ services:
         network_mode: bridge
         volumes:
             - .:/code
-        command: "bash -c 'cd /code; make; ./colReplacer'"
+        command: "bash -c 'cd /code; rm -f colReplacer; make; ./colReplacer'"
         tty: true
 
     clean:
@@ -21,5 +21,5 @@ services:
         network_mode: bridge
         volumes:
             - .:/code
-        command: "bash -c 'cd /code; make test; ./testColReplacer'"
+        command: "bash -c 'cd /code; rm -f testColReplacer; make test; ./testColReplacer'"
         tty: true
