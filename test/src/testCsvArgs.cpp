@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "CsvArgHandler.hpp"
+#include "CsvArgs.hpp"
 
 char programName[] = "colReplacer";
 

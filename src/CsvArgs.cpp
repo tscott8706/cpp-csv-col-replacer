@@ -1,4 +1,4 @@
-#include "CsvArgHandler.hpp"
+#include "CsvArgs.hpp"
 #include <stdexcept>
 
 CsvArgs::CsvArgs(int argc, char *argv[], bool isFile):

@@ -1,7 +1,7 @@
 #ifndef CSV_PROCESSOR_H
 #define CSV_PROCESSOR_H
 
-#include "CsvArgHandler.hpp"
+#include "CsvArgs.hpp"
 #include <istream>
 #include <string>
 
