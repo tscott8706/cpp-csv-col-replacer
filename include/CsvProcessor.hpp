@@ -1,25 +1,29 @@
 #ifndef CSV_PROCESSOR_H
 #define CSV_PROCESSOR_H
 
-#include "CsvArgs.hpp"
+#include <istream>
 #include <string>
 
 class CsvProcessor
 {
 public:
-    CsvProcessor(CsvArgs &args);
+    CsvProcessor(std::istream &inputData);
 
-    void replaceColValues();
+    std::string replaceColVals(const std::string &colToOverwrite,
+        const std::string &replaceVal);
 
 private:
     int findColToReplace(const std::string &headerName);
     void getColHeaders();
-    void replaceAllCols(int colNum, std::string replaceVal);
+    std::string replaceAllCols(int colNum, const std::string &replaceVal);
+    void checkedGetNextWord(std::string &word,
+        std::istringstream &colProcessor, const std::string &line,
+        bool expectedResult);
     std::string determineNextColWord(int col, int colNum,
         const std::string &replaceVal, const std::string &word);
     std::string getOutputWordDelimiter(int col);
 
-    CsvArgs &args;
+    std::istream &inputData;
     std::string colHeaders;
     int numCols;
     const int COL_NOT_FOUND;

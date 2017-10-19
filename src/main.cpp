@@ -3,9 +3,10 @@
 
 int main(int argc, char *argv[])
 {
-    const bool IN_AND_OUT_ARE_FILES = true;
-    CsvArgs args(argc, argv, IN_AND_OUT_ARE_FILES);
-    CsvProcessor processor(args);
-    processor.replaceColValues();
+    CsvArgs args(argc, argv);
+    CsvProcessor processor(args.getInputData());
+    std::string output = processor.replaceColVals(args.getColToOverwrite(),
+        args.getColReplaceVal());
+    args.setOutputData(output);
     return 0;
 }

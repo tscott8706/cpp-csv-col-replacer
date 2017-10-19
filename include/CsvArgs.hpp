@@ -3,38 +3,32 @@
 
 #include <fstream>
 #include <istream>
-#include <sstream>
 #include <string>
 
 class CsvArgs
 {
 public:
-    CsvArgs(const std::string &input, const std::string &colToOverwrite,
-        const std::string &colReplaceVal);
-    CsvArgs(int argc, char *argv[], bool isFile = true);
+    CsvArgs(int argc, char *argv[]);
     ~CsvArgs();
     CsvArgs(const CsvArgs& that) = delete;
 
-    std::istream *getInputData();
-    std::ostream *getOutputData();
+    std::istream &getInputData();
+    void setOutputData(const std::string &data);
     std::string getColToOverwrite();
     std::string getColReplaceVal();
 
 private:
-    void parseCommandLine(int argc, char *argv[], std::string &input,
-        std::string &output);
-    void setDataStreams(const std::string &input, const std::string &output);
+    void parseCommandLine(int argc, char *argv[]);
     void checkFile(const std::ios *fileHandler, const std::string &fileType);
 
-    std::istream *inputData;
-    std::ostream *outputData;
     std::string colToOverwrite;
     std::string colReplaceVal;
-    std::istringstream inputStringStream;
-    std::ostringstream outputStringStream;
     std::ifstream inputFile;
     std::ofstream outputFile;
-    bool isFile;
+    std::string inputFname;
+    std::string outputFname;
+    bool isInputOpen;
+    bool isOutputOpen;
 };
 typedef struct CsvArgs CsvArgs;
 

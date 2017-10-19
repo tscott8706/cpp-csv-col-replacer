@@ -1,44 +1,44 @@
 #include "CsvArgs.hpp"
 #include <stdexcept>
-#include <iostream>
 
-CsvArgs::CsvArgs(const std::string &input, const std::string &colToOverwrite,
-    const std::string &colReplaceVal):
-    inputData(NULL), outputData(NULL), colToOverwrite(colToOverwrite),
-    colReplaceVal(colReplaceVal), isFile(false)
+CsvArgs::CsvArgs(int argc, char *argv[]):
+    isInputOpen(false), isOutputOpen(false)
 {
-    setDataStreams(input, "");
-}
-
-CsvArgs::CsvArgs(int argc, char *argv[], bool isFile):
-    inputData(NULL), outputData(NULL), isFile(isFile)
-{
-    std::string input;
-    std::string output;
-    parseCommandLine(argc, argv, input, output);
-    setDataStreams(input, output);
+    parseCommandLine(argc, argv);
 }
 
 CsvArgs::~CsvArgs()
 {
-    if (isFile)
+    if (isInputOpen)
     {
         inputFile.close();
+    }
+    if (isOutputOpen)
+    {
         outputFile.close();
     }
-
-    inputData = NULL;
-    outputData = NULL;
 }
 
-std::istream *CsvArgs::getInputData()
+std::istream &CsvArgs::getInputData()
 {
-    return inputData;
+    if (!isInputOpen)
+    {
+        inputFile.open(inputFname.c_str(), std::ifstream::in);
+        checkFile(&inputFile, "input");
+        isInputOpen = true;
+    }
+    return inputFile;
 }
 
-std::ostream *CsvArgs::getOutputData()
+void CsvArgs::setOutputData(const std::string &data)
 {
-    return outputData;
+    if (!isOutputOpen)
+    {
+        outputFile.open(outputFname.c_str(), std::ofstream::out);
+        checkFile(&outputFile, "output");
+        isOutputOpen = true;
+    }
+    outputFile << data;
 }
 
 std::string CsvArgs::getColToOverwrite()
@@ -51,8 +51,7 @@ std::string CsvArgs::getColReplaceVal()
     return colReplaceVal;
 }
 
-void CsvArgs::parseCommandLine(int argc, char *argv[], std::string &input,
-        std::string &output)
+void CsvArgs::parseCommandLine(int argc, char *argv[])
 {
     const int programName = 1;
     const int requiredUserArgs = 4;
@@ -64,33 +63,10 @@ void CsvArgs::parseCommandLine(int argc, char *argv[], std::string &input,
             "colToOverwrite colReplaceVal outputData\n");
     }
 
-    input = argv[1];
+    inputFname = argv[1];
     colToOverwrite = argv[2];
     colReplaceVal = argv[3];
-    output = argv[4];
-}
-
-void CsvArgs::setDataStreams(const std::string &input,
-    const std::string &output)
-{
-    if (isFile)
-    {
-        inputFile.open(input.c_str(), std::ifstream::in);
-        outputFile.open(output.c_str(), std::ofstream::out);
-        checkFile(&inputFile, "input");
-        checkFile(&outputFile, "output");
-
-        inputData = &inputFile;
-        outputData = &outputFile;
-    }
-    else
-    {
-        inputStringStream.str(input);
-        // Output passed in is ignored if we aren't using files.
-
-        inputData = &inputStringStream;
-        outputData = &outputStringStream;
-    }
+    outputFname = argv[4];
 }
 
 void CsvArgs::checkFile(const std::ios *fileHandler,
