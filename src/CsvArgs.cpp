@@ -1,5 +1,14 @@
 #include "CsvArgs.hpp"
 #include <stdexcept>
+#include <iostream>
+
+CsvArgs::CsvArgs(const std::string &input, const std::string &colToOverwrite,
+    const std::string &colReplaceVal):
+    inputData(NULL), outputData(NULL), colToOverwrite(colToOverwrite),
+    colReplaceVal(colReplaceVal), isFile(false)
+{
+    setDataStreams(input, "");
+}
 
 CsvArgs::CsvArgs(int argc, char *argv[], bool isFile):
     inputData(NULL), outputData(NULL), isFile(isFile)

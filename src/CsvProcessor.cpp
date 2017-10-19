@@ -1,71 +1,62 @@
 #include "CsvArgs.hpp"
 #include "CsvProcessor.hpp"
-#include <iostream>
+#include <stdexcept>
 
-CsvProcessor::CsvProcessor(CsvArgs &args): args(args), numCols(0)
+CsvProcessor::CsvProcessor(CsvArgs &args):
+    args(args), numCols(0), COL_NOT_FOUND(-1)
 {
 }
 
-CsvProcessor::~CsvProcessor()
+void CsvProcessor::replaceColValues()
 {
-}
-
-bool CsvProcessor::replaceColValues()
-{
-    int colNum = findColNum(args.getColToOverwrite());
+    int colNum = findColToReplace(args.getColToOverwrite());
+    *args.getOutputData() << colHeaders << std::endl;
     replaceAllCols(colNum, args.getColReplaceVal());
-    return true;
 }
 
-int CsvProcessor::findColNum(std::string headerName)
+int CsvProcessor::findColToReplace(const std::string &headerName)
 {
-    const int NOT_FOUND = -1;
-    int colNum = NOT_FOUND;
+    getColHeaders();
 
-    if (!getColHeaders())
-    {
-        return NOT_FOUND;
-    }
-
+    int colNum = COL_NOT_FOUND;
     std::istringstream colHeaderProcessor(colHeaders);
     std::string colHeader;
 
-    do
+    while (getline(colHeaderProcessor, colHeader, ','))
     {
-        if (!getline(colHeaderProcessor, colHeader, ','))
-        {
-            break;
-        }
-        else if (colHeader == headerName)
+        if (colHeader == headerName)
         {
             colNum = numCols;
         }
         numCols++;
-    } while (colHeaderProcessor);
+    }
+
+    if (colNum == COL_NOT_FOUND)
+    {
+        throw std::invalid_argument("column name doesn't exist in the input "
+            "data\n");
+    }
 
     return colNum;
 }
 
-bool CsvProcessor::getColHeaders()
+void CsvProcessor::getColHeaders()
 {
     if (!args.getInputData()->good())
     {
-        return false;
+        throw std::invalid_argument("Could not open input file\n");
     }
 
     if (!getline(*args.getInputData(), colHeaders))
     {
-        return false;
+        throw std::invalid_argument("input data missing\n");
     }
-
-    return true;
 }
 
-bool CsvProcessor::replaceAllCols(int colNum, std::string replaceVal)
+void CsvProcessor::replaceAllCols(int colNum, std::string replaceVal)
 {
     std::string line;
     std::string word;
-    *args.getOutputData() << colHeaders << std::endl;
 
     while (getline(*args.getInputData(), line))
     {
@@ -74,28 +65,24 @@ bool CsvProcessor::replaceAllCols(int colNum, std::string replaceVal)
         {
             if (!getline(colProcessor, word, ','))
             {
-                std::cout << "bad\n";
-                return false;
+                throw std::invalid_argument("Input file is malformed.  " +
+                    line + "does not have correct number of columns.");
             }
 
-            if (col == colNum)
-            {
-                *args.getOutputData() << replaceVal;
-            }
-            else
-            {
-                *args.getOutputData() << word;
-            }
-            if (col == numCols - 1)
-            {
-                *args.getOutputData() << std::endl;
-            }
-            else
-            {
-                *args.getOutputData() << ',';
-            }
+            *args.getOutputData() <<
+                determineNextColWord(col, colNum, replaceVal, word) <<
+                getOutputWordDelimiter(col);
         }
     }
+}
 
-    return false;
+std::string CsvProcessor::determineNextColWord(int col, int colNum,
+    const std::string &replaceVal, const std::string &word)
+{
+    return (col == colNum) ? replaceVal : word;
+}
+
+std::string CsvProcessor::getOutputWordDelimiter(int col)
+{
+    return (col == (numCols - 1)) ? "\n" : ",";
 }

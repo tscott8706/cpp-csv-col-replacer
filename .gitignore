@@ -1,4 +1,5 @@
 *.o
 *.swp
+out.csv
 colReplacer
 testColReplacer

@@ -2,29 +2,27 @@
 #define CSV_PROCESSOR_H
 
 #include "CsvArgs.hpp"
-#include <istream>
 #include <string>
 
 class CsvProcessor
 {
 public:
     CsvProcessor(CsvArgs &args);
-    ~CsvProcessor();
 
-    bool replaceColValues();
-
-protected:
-    std::string getNextLineFromInputFile();
-    void writeNextLineToOutputFile();
+    void replaceColValues();
 
 private:
-    int findColNum(std::string headerName);
-    bool getColHeaders();
-    bool replaceAllCols(int colNum, std::string replaceVal);
+    int findColToReplace(const std::string &headerName);
+    void getColHeaders();
+    void replaceAllCols(int colNum, std::string replaceVal);
+    std::string determineNextColWord(int col, int colNum,
+        const std::string &replaceVal, const std::string &word);
+    std::string getOutputWordDelimiter(int col);
 
     CsvArgs &args;
     std::string colHeaders;
     int numCols;
+    const int COL_NOT_FOUND;
 };
 
 #endif

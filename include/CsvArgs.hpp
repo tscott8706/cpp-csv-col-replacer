@@ -9,6 +9,8 @@
 class CsvArgs
 {
 public:
+    CsvArgs(const std::string &input, const std::string &colToOverwrite,
+        const std::string &colReplaceVal);
     CsvArgs(int argc, char *argv[], bool isFile = true);
     ~CsvArgs();
     CsvArgs(const CsvArgs& that) = delete;
