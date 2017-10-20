@@ -5,7 +5,7 @@ services:
         network_mode: bridge
         volumes:
             - .:/code
-        command: "bash -c 'cd /code; rm -f colReplacer; make; ./colReplacer'"
+        command: "bash -c 'cd /code; rm -f colReplacer; make; ./colReplacer in.csv City London out.csv'"
         tty: true
 
     clean:
