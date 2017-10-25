@@ -12,13 +12,14 @@ TEST_CASE("Column not found should throw exception: 'column name doesn't "
     "exist in the input data'")
 {
     std::istringstream inputData("col1,col2,col3\nval1,val2,val3");
-    REQUIRE_THROWS(CsvProcessor(inputData).replaceColVals("col4", "myval"));
+    REQUIRE_THROWS(CsvProcessor(inputData).replaceColVals("badColHeader",
+        "myval"));
 }
 
 TEST_CASE("Different num columns (too few) in input data throws exception: "
     "'input file is malformed'")
 {
-    std::istringstream inputData("col1,col2,col3\nval1,val2,val3\nval1,val2");
+    std::istringstream inputData("col1,col2,col3\nval1,val2,val3\nthisRow,hasNoThirdCol");
     REQUIRE_THROWS(CsvProcessor(inputData).replaceColVals("col1", "myval"));
 }
 
@@ -26,7 +27,7 @@ TEST_CASE("Different num columns (too many) in input data throws exception: "
     "'input file is malformed'")
 {
     std::istringstream inputData("col1,col2,col3\nval1,val2,val3\n"
-        "val1,val2,val3,val4");
+        "val1,val2,val3,extraCol");
     REQUIRE_THROWS(CsvProcessor(inputData).replaceColVals("col1", "myval"));
 }
 
